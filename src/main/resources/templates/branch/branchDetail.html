@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<div layout:fragment="content">
+
+    <div class="row justify-content-center">
+
+        <div class="col-xl-10 col-lg-12 col-md-9">
+
+            <div class="card o-hidden border-0 shadow-lg login-top">
+                <div class="card-body">
+
+                    <div class="row">
+                            <div class="p-5">
+                                <div>
+                                    <h1 class="h4 text-gray-900 mb-4"> 지점 정보 </h1>
+                                </div>
+                                <form class="user">
+                                    <div class="form-group">
+                                        이메일 : <span th:text="${branchDTO.email}"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        비밀번호 : <span th:text="${branchDTO.password}"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        지점명 : <span th:text="${branchDTO.name}"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        핸드폰 : <span th:text="${branchDTO.phone}"></span>
+                                    </div>
+
+                                    <!-- 수정 -->
+                                    <div>
+                                        <a th:href="@{'/post/edit/' + ${branchDTO.id}}">
+                                            <button type="button" class="btn btn-primary">수정</button>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var boardDto = /*[[${branchDTO}]]*/ "";
+    /*]]>*/
+</script>
+
+<!-- script -->
+<script th:inline="javascript" th:src="@{/js/branch.js}"></script>
+</html>

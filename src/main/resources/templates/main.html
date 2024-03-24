@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{/test/layout}">
+
+<th:block layout:fragment="script">
+    <!-- 필요한 스타일시트 및 스크립트를 로드합니다. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+
+</th:block>
+<div layout:fragment="content">
+
+    <!-- 메인페이지 -->
+    <div class="container-fluid" style="max-width: 2000px">
+
+        <!-- 한줄 요약 -->
+        <div class="row">
+            <!-- 일간 총 매출액 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 20px;">
+                                    일간 총 매출액
+                                </div>
+                                <div style="margin-top:10px; margin-bottom: 10px;">
+                                    <h3 class="hw-light text-black" th:if="${daily == 0}">매출 확인 중</h3>
+                                    <div th:if="${compareLstDaily > 0}">
+                                        <h3 class="hw-light text-black" style="display : inline;"
+                                            data-th-text="${#numbers.formatInteger(daily, 3, 'COMMA') + '원'}"></h3>
+                                        <span style="color : red"
+                                              th:text="${#numbers.formatDecimal(compareLstDaily, 1, 1)} + '% 📈'"></span>
+                                    </div>
+                                    <div th:unless="${compareLstDaily > 0}">
+                                        <h3 class="hw-light text-black" style="display : inline;"
+                                            data-th-text="${#numbers.formatInteger(daily, 3, 'COMMA') + '원'}"></h3>
+                                        <span style="color : blue"
+                                              th:text="${#numbers.formatDecimal(compareLstDaily, 1, 1)} + '% 📉' "></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주간 총 매출액 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1" style="font-size: 20px;">
+                                    주간 총 매출액
+                                </div>
+                                <div style="margin-top:10px; margin-bottom: 10px;">
+                                    <div th:if="${compareLstWeek > 0}">
+                                        <h3 class="hw-light text-black" style="display : inline;"
+                                            data-th-text="${#numbers.formatInteger(week, 3, 'COMMA') + '원'}"></h3>
+                                        <span style="color : red"
+                                              th:text="${#numbers.formatDecimal(compareLstWeek, 1, 1)} + '% 📈'"></span>
+                                    </div>
+                                    <div th:unless="${compareLstWeek > 0}">
+                                        <h3 class="hw-light text-black" style="display : inline;"
+                                            data-th-text="${#numbers.formatInteger(week, 3, 'COMMA') + '원'}"></h3>
+                                        <span style="color : blue"
+                                              th:text="${#numbers.formatDecimal(compareLstWeek, 1, 1)} + '% 📉' "></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 월간 총 매출액 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1" style="font-size: 20px;">
+                                    월간 총 매출액
+                                </div>
+                                <div style="margin-top:10px; margin-bottom: 10px;">
+                                    <div th:if="${compareLstMonth > 0}">
+                                        <h3 class="hw-light text-black" style="display : inline;"
+                                            data-th-text="${#numbers.formatInteger(month, 3, 'COMMA') + '원'}"></h3>
+                                        <span style="color : red"
+                                              th:text="${#numbers.formatDecimal(compareLstMonth, 1, 1)} + '% 📈'"></span>
+                                    </div>
+                                    <div th:unless="${compareLstMonth > 0}">
+                                        <h3 class="hw-light text-black" style="display : inline;"
+                                            data-th-text="${#numbers.formatInteger(month, 3, 'COMMA') + '원'}"></h3>
+                                        <span style="color : blue"
+                                              th:text="${#numbers.formatDecimal(compareLstMonth, 1, 1)} + '% 📉' "></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 지점 수 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div sec:authorize="hasRole('ADMIN')">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="font-size: 20px;">
+                                        전체 지점 수
+                                    </div>
+                                    <h3 class="hw-light text-black" style="margin-top: 15px;" th:text="${count}"></h3>
+                                </div>
+                                <div  sec:authorize="hasRole('USER')">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="font-size: 20px;">
+                                        금일 주문량
+                                    </div>
+                                    <h3 class="hw-light text-black" style="margin-top: 15px;" th:text="${todaysOrderCount}"></h3>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-store fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 그래프 요약 -->
+
+        <!-- 월별 총 매출 -->
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div sec:authorize="hasRole('ADMIN')">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">월별 총 매출</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <!-- Chart.js 그래프를 표시할 캔버스 -->
+                                <canvas id="monthChart" style="width:800px; height: 200px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div sec:authorize="hasRole('USER')">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">월별 총 매출</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <!-- Chart.js 그래프를 표시할 캔버스 -->
+                                <canvas id="monthChartByBranch" style="width:800px; height: 200px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--     ADMIN     -->
+                <script th:inline="javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        console.log(/*[[${monthlySalesData}]]*/);
+                        var dataPoints = /*[[${monthlySalesData}]]*/;
+                        var ctx = document.getElementById('monthChart').getContext('2d');
+                        var monthChart = new Chart(ctx, {
+                            type: 'line', // Change from 'bar' to 'line'
+                            data: {
+                                labels: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+                                datasets: [{
+                                    label: '매출',
+                                    data: dataPoints.map(item => item[1]), // Use your actual data here
+                                    backgroundColor: `rgba(54, 162, 235, 0.2)`, // Adjust for line chart
+                                    borderColor: `rgba(54, 162, 235, 1)`, // Adjust for line chart
+                                    borderWidth: 2,
+                                    fill: false, // Ensures the area under the line isn't filled
+                                    pointBackgroundColor: '#fff', // Color of the points on the line
+                                    pointBorderColor: `rgba(54, 162, 235, 1)`, // Border color of the points
+                                    pointHoverBackgroundColor: `rgba(54, 162, 235, 1)`, // Hover color of the points
+                                    pointHoverBorderColor: '#fff', // Hover border color of the points
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        // Y축의 표시 형식을 커스터마이징
+                                        callback: function(value, index, values) {
+                                            return value.toLocaleString(); // Y축의 값에 쉼표 포함
+                                        }
+                                    },
+                                    x: { // Update for Chart.js 3
+                                        grid: {
+                                            display: false // Hides the grid lines for x-axis
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    datalabels: {
+                                        align: 'end',
+                                        anchor: 'end',
+                                        formatter: function(value, context) {
+                                            return value.toLocaleString(); // 숫자에 쉼표 추가
+                                        }
+                                    }
+                                },
+                                tooltips: { // Chart.js 2.x 버전에서는 tooltips 옵션, 3.x 이상 버전에서는 plugins.tooltip 사용
+                                    callbacks: {
+                                        // 툴팁에 표시되는 텍스트 형식을 커스터마이징
+                                        label: function(tooltipItem, chart) {
+                                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                            return datasetLabel + ': ' + tooltipItem.yLabel.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+                <!--     USER      -->
+                <script th:inline="javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        console.log(/*[[${monthlySalesDataByBranch}]]*/);
+                        var dataPointsByBranch = /*[[${monthlySalesDataByBranch}]]*/;
+                        var ctx = document.getElementById('monthChartByBranch').getContext('2d');
+                        var monthChartByBranch = new Chart(ctx, {
+                            type: 'line', // Change from 'bar' to 'line'
+                            data: {
+                                labels: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+                                datasets: [{
+                                    label: '매출',
+                                    data: dataPointsByBranch.map(item => item[1]), // Use your actual data here
+                                    backgroundColor: `rgba(54, 162, 235, 0.2)`, // Adjust for line chart
+                                    borderColor: `rgba(54, 162, 235, 1)`, // Adjust for line chart
+                                    borderWidth: 2,
+                                    fill: false, // Ensures the area under the line isn't filled
+                                    pointBackgroundColor: '#fff', // Color of the points on the line
+                                    pointBorderColor: `rgba(54, 162, 235, 1)`, // Border color of the points
+                                    pointHoverBackgroundColor: `rgba(54, 162, 235, 1)`, // Hover color of the points
+                                    pointHoverBorderColor: '#fff', // Hover border color of the points
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: { // Update for Chart.js 3
+                                        beginAtZero: true
+                                    },
+                                    x: { // Update for Chart.js 3
+                                        grid: {
+                                            display: false // Hides the grid lines for x-axis
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    datalabels: {
+                                        align: 'end',
+                                        anchor: 'end',
+                                        formatter: function(value, context) {
+                                            return value.toLocaleString(); // 숫자에 쉼표 추가
+                                        }
+                                    }
+                                },
+                                tooltips: { // Chart.js 2.x 버전에서는 tooltips 옵션, 3.x 이상 버전에서는 plugins.tooltip 사용
+                                    callbacks: {
+                                        // 툴팁에 표시되는 텍스트 형식을 커스터마이징
+                                        label: function(tooltipItem, chart) {
+                                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                            return datasetLabel + ': ' + tooltipItem.yLabel.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+                <!--    ADMIN     -->
+                <script th:inline="javascript">
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // 서버로부터 받은 topSalesBranches 데이터 로그 출력
+                        // console.log(/*[[${topSalesBranches}]]*/);
+
+                        var labels = /*[[${topSalesBranches}]]*/; // 지점명을 레이블로 사용
+                        var data = /*[[${topSalesBranches}]]*/; // 각 지점의 매출액을 데이터로 사용
+
+                        var ctx = document.getElementById('topSalesBranchesChart').getContext('2d');
+                        var topSalesBranchesChart = new Chart(ctx, {
+                            type: 'bar', // 차트 타입을 'bar'로 설정하여 막대 차트를 생성
+                            data: {
+                                labels: labels.map(branch => branch[1]),
+                                datasets: [{
+                                    label: '매출',
+                                    data: data.map(branch => branch[2]),
+                                    backgroundColor: [
+                                        'rgba(255, 0, 0, 1)',
+                                        'rgba(0, 128, 0, 1)',
+                                        'rgba(0, 0, 255, 1)',
+                                        'rgba(255, 165, 0, 1)',
+                                        'rgba(128, 0, 128, 1)',
+                                        'rgba(255, 255, 0, 1)',
+                                        'rgba(0, 255, 255, 1)',
+                                        'rgba(255, 20, 147, 1)',
+                                        'rgba(0, 100, 0, 1)',
+                                        'rgba(139, 0, 0, 1)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 0, 0, 0.6)',   // Red
+                                        'rgba(0, 128, 0, 0.6)',   // Green
+                                        'rgba(0, 0, 255, 0.6)',   // Blue
+                                        'rgba(255, 165, 0, 0.6)', // Orange
+                                        'rgba(128, 0, 128, 0.6)', // Purple
+                                        'rgba(255, 255, 0, 0.6)', // Yellow
+                                        'rgba(0, 255, 255, 0.6)', // Cyan
+                                        'rgba(255, 20, 147, 0.6)',// Pink
+                                        'rgba(0, 100, 0, 0.6)',   // DarkGreen
+                                        'rgba(139, 0, 0, 0.6)'    // DarkRed
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                plugins: {
+                                    legend: {
+                                        display: false // 범례 숨기기
+                                    },
+                                    datalabels: {
+                                        display: false, // 이 차트에서만 데이터 레이블 활성화
+                                        // 데이터 레이블 설정...
+                                    }
+                                },
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                tooltips: { // Chart.js 2.x 버전에서는 tooltips 옵션, 3.x 이상 버전에서는 plugins.tooltip 사용
+                                    callbacks: {
+                                        // 툴팁에 표시되는 텍스트 형식을 커스터마이징
+                                        label: function(tooltipItem, chart) {
+                                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                            return datasetLabel + ': ' + tooltipItem.yLabel.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+                <!-- 지점 매출 순위 TOP 10 -->
+                <div sec:authorize="hasRole('ADMIN')">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">월별 지점 매출 순위 TOP 10</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-bar" style="margin-bottom: 1.5%;">
+                                <canvas id="topSalesBranchesChart" style="width:800px; height: 200px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 가장 많이 팔린 메뉴 -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">월별 베스트 메뉴 TOP 5</h6>
+                    </div>
+                    <div class="card-body"  style="height: 351.98px">
+                        <div sec:authorize="hasRole('USER')" class="chart-pie pt-4" style="margin-bottom: 80%;">
+                            <canvas id="topSoldItemsByBranchChart" style="height: 200px"></canvas>
+                        </div>
+                        <div sec:authorize="hasRole('ADMIN')" class="chart-pie pt-4" style="margin-bottom: 80%;">
+                            <canvas id="topSoldItemsChart" style="height: 200px"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!--    ADMIN     -->
+                <script th:inline="javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // 서버로부터 받은 topSoldItems 데이터 처리
+                        var topSoldItems = /*[[${topSoldItems}]]*/ [];
+
+                        // 데이터에서 레이블(메뉴 이름)과 데이터(판매 수량) 추출
+                        var labels = topSoldItems.map(item => item[0]);
+                        var data = topSoldItems.map(item => item[1]);
+
+                        var ctx = document.getElementById('topSoldItemsChart').getContext('2d');
+                        var topSoldItemsChart = new Chart(ctx, {
+                            type: 'doughnut', // 차트 타입을 'doughnut'로 설정
+                            data: {
+                                labels: labels, // 추출한 레이블 사용
+                                datasets: [{
+                                    label: 'Top Sold Items',
+                                    data: data, // 추출한 데이터 사용
+                                    backgroundColor: [
+                                        'rgba(255, 0, 0, 1)',
+                                        'rgba(0, 128, 0, 1)',
+                                        'rgba(0, 0, 255, 1)',
+                                        'rgba(255, 165, 0, 1)',
+                                        'rgba(128, 0, 128, 1)',
+                                        // 필요한 만큼 색상 추가
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 0, 0, 0.8)',   // Red
+                                        'rgba(0, 128, 0, 0.8)',   // Green
+                                        'rgba(0, 0, 255, 0.8)',   // Blue
+                                        'rgba(255, 165, 0, 0.8)', // Orange
+                                        'rgba(128, 0, 128, 0.8)', // Purple
+                                        // 필요한 만큼 테두리 색상 추가
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    datalabels: {
+                                        color: '#fff',
+                                        anchor: 'end',
+                                        align: 'start',
+                                        formatter: (value, ctx) => {
+                                            let sum = ctx.dataset._meta[Object.keys(ctx.dataset._meta)[0]].total;
+                                            let percentage = (value / sum * 100).toFixed(2) + "%";
+                                            return percentage;
+                                        }
+                                    }
+                                },
+                                legend: {
+                                    position: 'top',
+                                },
+                                animation: {
+                                    animateScale: true,
+                                    animateRotate: true
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+                <!--    USER     -->
+                <script th:inline="javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // 서버로부터 받은 topSoldItems 데이터 처리
+                        var topSoldItemsByBranch = /*[[${topSoldItemsByBranch}]]*/ [];
+
+                        // 데이터에서 레이블(메뉴 이름)과 데이터(판매 수량) 추출
+                        var labels = topSoldItemsByBranch.map(item => item[0]);
+                        var data = topSoldItemsByBranch.map(item => item[1]);
+
+                        var ctx = document.getElementById('topSoldItemsByBranchChart').getContext('2d');
+                        var topSoldItemsByBranchChart = new Chart(ctx, {
+                            type: 'doughnut', // 차트 타입을 'doughnut'로 설정
+                            data: {
+                                labels: labels, // 추출한 레이블 사용
+                                datasets: [{
+                                    label: 'Top Sold Items',
+                                    data: data, // 추출한 데이터 사용
+                                    backgroundColor: [
+                                        'rgba(255, 0, 0, 1)',
+                                        'rgba(0, 128, 0, 1)',
+                                        'rgba(0, 0, 255, 1)',
+                                        'rgba(255, 165, 0, 1)',
+                                        'rgba(128, 0, 128, 1)',
+                                        // 필요한 만큼 색상 추가
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 0, 0, 0.8)',   // Red
+                                        'rgba(0, 128, 0, 0.8)',   // Green
+                                        'rgba(0, 0, 255, 0.8)',   // Blue
+                                        'rgba(255, 165, 0, 0.8)', // Orange
+                                        'rgba(128, 0, 128, 0.8)', // Purple
+                                        // 필요한 만큼 테두리 색상 추가
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    datalabels: {
+                                        color: '#fff',
+                                        anchor: 'end',
+                                        align: 'start',
+                                        formatter: (value, ctx) => {
+                                            let sum = ctx.dataset._meta[Object.keys(ctx.dataset._meta)[0]].total;
+                                            let percentage = (value / sum * 100).toFixed(2) + "%";
+                                            return percentage;
+                                        }
+                                    }
+                                },
+                                legend: {
+                                    position: 'top',
+                                },
+                                animation: {
+                                    animateScale: true,
+                                    animateRotate: true
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+                <!-- 전국 지점 -->
+<!--                <div sec:authorize="hasRole('ADMIN')">-->
+<!--                    <div class="card shadow mb-4" style="height:47%;">-->
+<!--                        <div class="card-header py-3">-->
+<!--                            <h6 class="m-0 font-weight-bold text-primary">지리적 매출 분석</h6>-->
+<!--                        </div>-->
+<!--                        <div class="card-body">-->
+<!--                            <div id="visualization"></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+</html>

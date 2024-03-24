@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/test/layout}">
+
+<th:block layout:fragment="css">
+    <style>
+        .input-group {
+            margin-bottom : 15px
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h4 class="m-0 font-weight-bold text-gray-900"> 지점 정보 수정 </h4>
+        </div>
+
+        <div class="card-body">
+        <form class="user" th:action="@{'/test/branchUpdate/' + ${branch.branchId}}" method="post">
+            <input type="hidden" name="_method" value="put"/>
+            <input type="hidden" name="branchId" th:value="${branch.branchId}"/>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">상태</span>
+                </div>
+                <select name="testBranchStatus" class="custom-select">
+                    <option value="영업" th:selected="${branch.branchStatus == '영업'}">영업</option>
+                    <option value="휴업" th:selected="${branch.branchStatus == '휴업'}">휴업</option>
+                    <option value="폐업" th:selected="${branch.branchStatus == '폐업'}">폐업</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">이메일</span>
+                </div>
+                <input type="email" class="form-control" name="email" th:value="${branch.email}">
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">지점명</span>
+                </div>
+                <input type="text" class="form-control" name="branchName" th:value="${branch.branchName}"/>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">연락처</span>
+                </div>
+                <input type="tel" class="form-control" name="phone" th:value="${branch.phone}">
+            </div>
+
+            <div>
+                <input type="submit" class="btn btn-primary" value="등록">
+                <a class="btn btn-primary"  href="/test/branchList">취소</a>
+            </div>
+            <input type="hidden" name="address" th:value="${branch.address}"/>
+            <input type="hidden" name="branchStatus" th:value="${branch.branchStatus}"/>
+            <input type="hidden" name="authority" th:value="${branch.authority}"/>
+        </form>
+    </div>
+    </div>
+    </div>
+</div>
+</html>

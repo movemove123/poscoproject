@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{/test/layout}">
+
+<th:block layout:fragment="script">
+    <script>
+        function employeeUpdate(employeeId) {
+            // 페이지를 /test/employeeUpdate/{id}로 이동시킵니다.
+            window.location.href = `/test/employeeUpdate/${employeeId}`;
+        }
+        function formatSalary(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }$(document).ready(function() {
+            var salaryElement = $("#salary");
+            var salary = salaryElement.text();
+            var formattedSalary = formatSalary(salary);
+            salaryElement.text(formattedSalary);
+        });
+        //삭제함수
+        function employeeDelete(employeeId){
+            console.log(employeeId);
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            if(token && header) {
+                $(document).ajaxSend(function(event, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
+            }
+            var url = "/test/employeeDelete/" + employeeId;
+
+            var paramData = {
+                epId : employeeId,
+            };
+
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url      : url,
+                type     : "DELETE",
+                contentType : "application/json",
+                data     : param,
+                beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType : "json",
+                cache   : false,
+                success  : function(result, status){
+                    alert("직원 삭제");
+                    location.href='/test/employeeList';
+                },
+                error : function(jqXHR, status, error){
+                    if(jqXHR.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href='/login';
+                    } else{
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <!-- 테이블 제목 -->
+    <h1 class="h3 mb-2 text-gray-800"> 직원 관리 </h1>
+
+    <!-- 테이블 부제목 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary" style="line-height: 38px"> 직원 목록 </h6>
+                <a class="btn btn-primary" href="/test/employeeForm">직원 등록</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                    <!-- 테이블 타이틀 -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                                   role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                <thead>
+                                <tr role="row">
+                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                        aria-label="Position: activate to sort column ascending"
+                                        style="width: 300px; text-align: center;"> 이름 </th>
+                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                        aria-label="Position: activate to sort column ascending"
+                                        style="width: 300px; text-align: center;"> 연락처 </th>
+                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                        aria-label="Office: activate to sort column ascending"
+                                        style="width: 160px; text-align: center;"> 직책 </th>
+                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                        aria-label="Age: activate to sort column ascending"
+                                        style="width: 300px; text-align: center;"> 급여 </th>
+                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                        aria-label="Salary: activate to sort column ascending"
+                                        style="width: 110px; text-align: center;"> 편집 </th>
+                                </tr>
+                                </thead>
+
+                                <!-- DB 데이터 출력 -->
+                                <tbody>
+                                <tr class="odd" th:each="employee : ${list}">
+                                    <td>
+                                        <span th:text="${employee.epName}"></span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${employee.phone}"></span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${employee.epPosition}"></span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${employee.epSalary}" id="salary"></span>
+                                    </td>
+                                    <td style="text-align: center; padding: 1px;">
+                                        <button class="btn btn-primary" type="button" style="margin-top: 4.5px"
+                                                th:data-employee-id="${employee.epId}"
+                                                onclick="employeeUpdate(this.getAttribute('data-employee-id'))">수정
+                                        </button>
+                                        <button class="btn btn-danger" type="button" style="margin-top: 4.5px"
+                                                th:data-employee-id="${employee.epId}"
+                                                onclick="employeeDelete(this.getAttribute('data-employee-id'))">삭제
+                                        </button>
+                                        </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+</html>

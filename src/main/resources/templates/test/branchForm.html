@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{/test/layout}">
+
+<th:block layout:fragment="script">
+    <script>
+        $(document).ready(function(){
+            var errorMessage = [[${errorMessage}]];
+            if(errorMessage != null){
+                alert(errorMessage);
+            }
+        });
+
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .input-group {
+            margin-bottom : 15px
+        }
+        .fieldError {
+            color: #bd2130;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h4 class="m-0 font-weight-bold text-gray-900"> 지점 등록 </h4>
+        </div>
+
+        <div class="card-body">
+        <form action="/test/branchForm" role="form" method="post" th:object="${branchFormDTO}">
+
+            <input type="hidden" th:field="*{branchId}">
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">상태</span>
+                </div>
+                <select th:field="*{branchStatus}" class="custom-select">
+                    <option value="영업">영업</option>
+                    <option value="휴업">휴업</option>
+                    <option value="폐업">폐업</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">지점명</span>
+                </div>
+                <input type="text" th:field="*{branchName}" class="form-control" placeholder="지점명을 입력해주세요">
+            </div>
+            <p th:if="${#fields.hasErrors('branchName')}" th:errors="*{branchName}" class="fieldError">Incorrect data</p>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">이메일</span>
+                </div>
+                <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="이메일을 입력해주세요">
+            </div>
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError">Incorrect data</p>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">비밀번호</span>
+                </div>
+                <input type="password" th:field="*{password}" id="password" class="form-control" placeholder="비밀번호를 입력해주세요">
+            </div>
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">Incorrect data</p>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">주소</span>
+                </div>
+                <input type="text" th:field="*{address}" id="address" class="form-control" placeholder="주소를 입력해주세요">
+            </div>
+            <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError">Incorrect data</p>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text text-center" style="display: inline-block; width: 100px;">연락처</span>
+                </div>
+                <input type="tel" th:field="*{phone}" id="phone" class="form-control" placeholder="연락처를 입력해주세요">
+            </div>
+            <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="fieldError">Incorrect data</p>
+            <div style="text-align: center">
+                <button type="submit" class="btn btn-primary" style="">등록</button>
+                <a class="btn btn-primary"  href="/test/branchList">취소</a>
+            </div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        </form>
+    </div>
+
+    </div>
+    </div>
+</div>
+</html>

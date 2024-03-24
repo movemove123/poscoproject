@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1}">
+
+<div layout:fragment="content">
+<table>
+    <div id="container" align="center">
+        <form name="searchFrm">
+            <select name="colName" id="colName">
+                <optgroup value="">:: 검색 </optgroup>
+                <optgroup value="start">시작날짜 </optgroup>
+                <optgroup value="end">끝난날짜 </optgroup>
+            </select>
+            <input type="text" name="searchWord" />
+            <input type="text" style="display: none;">
+            <button type="button" id="btnSerach">검색</button>
+        </form>
+    </div>
+</table>
+    <table>
+        <thead>
+        <tr>
+            <th class="one wide">번호</th>
+            <th class="ten wide">col1</th>
+            <th class="two wide">col2</th>
+            <th class="three wide">col3</th>
+            <th class="three wide">col4</th>
+            <th class="three wide">col5</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <!-- CONTENTS !-->
+        <tr th:each="sample : ${sampleList}">
+            <td>
+                <span th:text="${sample.id}"></span>
+            </td>
+            <td>
+                <span th:text="${sample.col1}"></span>
+            </td>
+            <td>
+                <span th:text="${sample.col2}"></span>
+            </td>
+            <td>
+                <span th:text="${sample.col3}"></span>
+            </td>
+            <td>
+                <span th:text="${sample.col4}"></span>
+            </td>
+            <td>
+                <span th:text="${sample.col5}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="gurodigital project a team">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <title>KoKee Tea Sales</title>
+
+    <!-- layout1을 사용하는 페이지 공용 CSS only -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/order.css}" rel="stylesheet">
+
+    <!-- layout1을 사용하는 공용 스크립트 요소 JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- 개별 페이지의 css fragment -->
+    <th:block layout:fragment="css"></th:block>
+
+    <!-- 개별 페이지의 script fragment -->
+    <th:block layout:fragment="script_top"></th:block>
+
+  </head>
+  <body>
+
+  <!--  header fragments 로 교체되는 곳 -->
+  <div th:replace="fragments/header::header">
+
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+
+      <!--  navi fragments 로 교체되는 곳 -->
+      <div th:replace="fragments/navi::navi"></div>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!--  content fragment 추가되는 곳  -->
+        <div layout:fragment="content"></div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- 개별 페이지의 script fragment -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+          integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+          integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha"
+          crossorigin="anonymous"></script>
+
+  <th:block layout:fragment="script_bottom"></th:block>
+<!--  <script src="js/dashboard.js"></script>-->
+  </body>
+</html>

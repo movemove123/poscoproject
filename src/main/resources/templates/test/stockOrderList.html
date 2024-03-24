@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{/test/layout}">
+
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <h1 class="h3 mb-2 text-gray-800"> 발주 관리 </h1>
+
+    <!-- Left(테이블 출력) -->
+    <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary"> 발주 목록 </h6>
+                </div>
+                <!-- 테이블 타이틀 -->
+                <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                           role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                        <thead>
+                        <tr role="row">
+                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                colspan="1" aria-sort="ascending"
+                                aria-label="Name: activate to sort column descending"
+                                style="width: 10%; text-align: center;"> ID
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Position: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 발주일
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 20%; text-align: center;"> 재료명
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 수량
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 금액
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 지점명
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 상태
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 편집
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <!-- DB 데이터 출력 -->
+                        <tbody>
+                        <tr th:each="stockOrder, status : ${list}">
+                            <td class="sorting_1" style="text-align: center">
+                                    <span th:text="${stockOrder.soId}"></span>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${stockOrder.soCreatedDate}"></span>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${stockOrder.ingredient.igName}"></span>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${stockOrder.soQuantity}"></span>
+                            </td>
+                            <td>
+                                <span data-th-text="${#numbers.formatInteger(stockOrder.soPayment, 3, 'COMMA') + '원'}"></span>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${stockOrder.branch.branchName}"></span>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${stockOrder.stockOrderStatus}"></span>
+                            </td>
+                            <td style="text-align: center; padding: 1px;">
+                                <div th:if="${stockOrder.stockOrderStatus.name() == '대기'}">
+                                    <div sec:authorize="hasRole('ADMIN')">
+                                        <button class="btn btn-primary" type="button" style="margin-top: 4.5px"
+                                                th:data-so-id="${stockOrder.soId}"
+                                                onclick="stockOrderConfirm(this.getAttribute('data-so-id'))">승인
+                                        </button>
+                                        <button class="btn btn-danger" type="button" style="margin-top: 4.5px"
+                                                th:data-so-id="${stockOrder.soId}"
+                                                onclick="stockOrderReject(this.getAttribute('data-so-id'))">반려
+                                        </button>
+                                    </div>
+                                    <div sec:authorize="hasRole('USER')">
+                                        <button class="btn btn-primary" type="button" style="margin-top: 4.5px"
+                                                th:data-so-id="${stockOrder.soId}"
+                                                onclick="stockOrderUpdate(this.getAttribute('data-so-id'))">수정
+                                        </button>
+                                        <button class="btn btn-danger" type="button" style="margin-top: 4.5px"
+                                                th:data-so-id="${stockOrder.soId}"
+                                                onclick="stockOrderDelete(this.getAttribute('data-so-id'))">삭제
+                                        </button>
+                                    </div>
+                                </div>
+                                <div th:unless="${stockOrder.stockOrderStatus.name() == '대기'}">
+                                    <span style="text-align: center">결정 완료</span>
+                                </div>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 페이징 -->
+                    <nav aria-label="Page navigation" class="mt-4"> <!-- 상단 마진 추가하여 테이블과의 간격 조절 -->
+                        <ul class="pagination justify-content-center">
+                            <!-- 이전 버튼 Prev -->
+                            <li class="page-item" th:classappend="${nowPage <= 1} ? 'disabled' : ''">
+                                <a th:href="@{/test/stockOrderList(page=${nowPage - 2})}" aria-label="Previous" class="page-link">
+                                    <span aria-hidden="true">Prev</span>
+                                </a>
+                            </li>
+                            <!--현재 페이지 번호 -->
+                            <li class="page-item" th:each="page : ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == nowPage} ? 'active' : ''">
+                                <a th:href="@{/test/stockOrderList(page=${page - 1})}" th:text="${page}" class="page-link"></a>
+                            </li>
+                            <!-- 다음 버튼 Next -->
+                            <li class="page-item" th:classappend="${nowPage >= endPage} ? 'disabled' : ''">
+                                <a th:href="@{/test/stockOrderList(page=${nowPage})}" aria-label="Next" class="page-link">
+                                    <span aria-hidden="true">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+                <!-- End Table -->
+
+            </div>
+
+    </div>
+</div>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // 공통 AJAX 요청 함수
+        function sendStockOrderRequest(action, soId, successMessage) {
+            console.log(soId);
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            if (token && header) {
+                $(document).ajaxSend(function(event, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
+            }
+            var url = `/test/${action}/${soId}`;
+
+            var paramData = {
+                soId: soId,
+            };
+
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: action === "stockOrderDelete" ? "DELETE" : "POST", // Delete 요청과 Put 요청을 구분
+                contentType: "application/json",
+                data: param,
+                beforeSend: function(xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function(response){
+                    alert(response);
+                },
+                error: function(jqXHR, status, error){
+                    if(jqXHR.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href='/';
+                    } else{
+                        console.log(jqXHR.responseText);
+                        alert(jqXHR.responseText);
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        // 수정, 삭제, 승인, 반려 버튼에 사용할 함수
+        function stockOrderUpdate(soId) {
+            window.location.href = `/test/stockOrderUpdate/${soId}`;
+        }
+
+        function stockOrderDelete(soId){
+            sendStockOrderRequest("stockOrderDelete", soId, "발주 삭제");
+        }
+
+        function stockOrderConfirm(soId){
+            sendStockOrderRequest("stockOrderConfirm", soId, "발주 승인");
+        }
+
+        function stockOrderReject(soId){
+            sendStockOrderRequest("stockOrderReject", soId, "발주 반려");
+        }
+    </script>
+
+</th:block>
+</html>

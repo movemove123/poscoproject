@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/test/layout}">
+
+<th:block layout:fragment="css">
+    <script>
+        function formatSalary(input) {
+            // Remove existing commas and non-numeric characters
+            let value = input.value.replace(/[^\d]/g, '');
+
+            // Add commas every three digits
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            // Update the input value
+            input.value = value;
+        }
+    </script>
+    <style>
+        .input-group {
+            margin-bottom : 15px
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h4 class="m-0 font-weight-bold text-gray-900"> 직원 정보 수정 </h4>
+        </div>
+
+        <div class="card-body">
+            <form class="user" th:action="@{'/test/employeeUpdate/' + ${employee.epId}}" method="post">
+                <input type="hidden" name="_method" value="put"/>
+                <input type="hidden" name="epId" th:value="${employee.epId}"/>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text text-center" style="display: inline-block; width: 100px;">직책</span>
+                    </div>
+                    <select name="epPosition" class="custom-select">
+                        <option value="점장" th:selected="${employee.epPosition == '점장'}">점장</option>
+                        <option value="매니저" th:selected="${employee.epPosition == '매니저'}">매니저</option>
+                        <option value="바리스타" th:selected="${employee.epPosition == '바리스타'}">바리스타</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text text-center" style="display: inline-block; width: 100px;">이름</span>
+                    </div>
+                    <input type="text" class="form-control" name="epName" th:value="${employee.epName}">
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text text-center" style="display: inline-block; width: 100px;">연락처</span>
+                    </div>
+                    <input type="tel" class="form-control" name="phone" th:value="${employee.phone}"/>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text text-center" style="display: inline-block; width: 100px;">급여</span>
+                    </div>
+                    <input type="tel" class="form-control" name="epSalary" id="epSalary" th:value="${employee.epSalary}" oninput="formatSalary(this)">
+
+                </div>
+
+                <div>
+                    <input type="submit" class="btn btn-primary" value="등록">
+                    <a class="btn btn-primary"  href="/test/employeeList">취소</a>
+                </div>
+                <!-- branchId에 null 이 계속 들어감 -->
+                <input type="hidden" name="branchId" th:value="${employee.Branch.branchId}"/>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+
+</html>

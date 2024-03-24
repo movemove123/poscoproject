@@ -1,0 +1,111 @@
+
+.navbar {
+    padding: 0.5rem 1rem;
+    height: auto; /* Adjusted to auto to accommodate content */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navBack {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    height: 85.97px;
+    background-color: rgb(248, 249, 250);
+    z-index: -10;
+}
+.navbar-center {
+    max-width: 2000px;
+    width: 100%;
+    margin: 0 auto; /* 중앙 정렬 */
+}
+.navbar-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.navbar-custom {
+    width: 100%;
+}
+
+body {
+    padding-top: 85.97px;
+}
+.navbar-brand img {
+    height: 60px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+.navbar-brand {
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Add some space between logo image and text */
+}
+.d-flex.align-items-center {
+    gap: 120px; /* Added gap for spacing between elements */
+}
+
+
+/* Style the links and section titles inside the navigation bar */
+.navbar-nav .nav-link, .navbar-nav .nav-section-title {
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 17px; /* Adjust size as needed */
+    color: #333333; /* Consistent text color */
+    display: block;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* Additional styling for section titles for differentiation, if needed */
+.navbar-nav .nav-section-title {
+    font-weight: bold; /* Make section titles bold */
+    color: #007bff; /* Optional: change color to differentiate from links */
+    margin-top: 10px; /* Optional: add some margin above section titles */
+}
+
+/* 지점 섹션 타이틀에만 적용될 스타일 */
+.branch-section-title {
+    border-bottom: 1px solid #eaeaea; /* 예시: 회색 선 추가 */
+    padding-bottom: 5px; /* 하단 패딩 추가 */
+}
+
+/* Ensure hover effects are only applied to links, not section titles */
+.navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus {
+    background-color: #f8f9fa; /* Light background on hover */
+    color: #007bff; /* Highlight color on hover */
+}
+
+/* Remove border-bottom from all nav-item */
+.navbar-nav .nav-item {
+    border-bottom: none;
+}
+
+/* Add border-bottom only to nav-item that follows a nav-section-title */
+.nav-section-title + .nav-item {
+    border-top: 1px solid #eaeaea; /* Light grey line for separation */
+}
+
+/* Remove top margin and border from nav-section-title to avoid duplication */
+.nav-section-title {
+    margin-top: 0;
+    border-top: none;
+}
+.d-flex.align-items-center {
+    justify-content: flex-end; /* 요소들을 오른쪽 정렬 */
+    flex-wrap: wrap; /* 필요한 경우 요소를 다음 줄로 넘김 */
+}
+.dropdown-menu {
+    right: 0; /* 오른쪽에 고정 */
+    left: auto; /* 왼쪽 정렬 비활성화 */
+}
+.img-profile {
+    width: 30px; /* 아이콘 너비 조정 */
+    height: 30px; /* 아이콘 높이 조정 */
+    border-radius: 50%; /* 원형 아이콘을 위한 설정 */
+}
+.nav-item dropdown no-arrow me-2 {
+    margin-right: 20px; /* 오른쪽 마진 조정 */
+}

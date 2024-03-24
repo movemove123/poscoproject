@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<!--
+
+    새로운 차트를 만들 때 아래 th:block 안의 스크립트를 새로만드는 차트에서 사용하는 스크립트로 변경해 주세요.
+    필요하다면 css 블록도 변경하시면 됩니다.
+    본문은 fragment=content 블록안에 넣으시면 됩니다.
+
+    수정 후 파일 링크는 /templates/fragments/navi.html 파일의 적당한 부분에 추가하시면 됩니다!
+
+ -->
+
+    <th:block layout:fragment="script_top">
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js"></script>
+        <script>
+        // JSON Array 출력
+        // console.log([[${data}]])
+
+        const data = [[${data}]]
+
+        /** chart 에는 배열안에 배열, 즉 2중 배열이 들어간다 **/
+        anychart.onDocumentReady(function () {
+            // 원본
+            // create pie chart with passed data
+            // var chart = anychart.pie([
+            //     ['Department Stores', 6300],
+            //     ['Discount Stores', 7200],
+            //     ['Men\'s/Women\'s Stores', 1400],
+            //     ['Juvenile Specialty Stores', 7800],
+            //     ['All other outlets', 9000]
+            // ]);
+
+
+            // 배열로 만들기 => 예제1
+            // let list = new Array();
+            // data.forEach((value, index) => {
+            //     list.push(['col'+index, value['col'+index]])
+            // })
+            // console.log(list)
+
+            // 배열로 만들기 => entries 사용!!!
+
+
+            let chart = anychart.pie(Object.entries(data));
+
+            // set chart title text settings
+            chart
+                .title('KOKEE TEA 임시 data 차트1')
+                // create empty area in pie chart
+                .innerRadius('40%');
+
+            // set chart labels position to outside
+            chart.labels().position('outside');
+
+            // set container id for the chart
+            chart.container('chart1');
+            // initiate chart drawing
+            chart.draw();
+        });
+
+    </script>
+    </th:block>
+
+    <th:block layout:fragment="css">
+        <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
+        <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet">
+    </th:block>
+
+
+    <div layout:fragment="content">
+        <div id="chart1"></div>
+    </div>
+
+</html>

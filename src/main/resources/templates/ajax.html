@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<th:block layout:fragment="script_top">
+    <script th:inline="javascript">
+      async function categoryApi(){
+        const categories = ["Milk Tea", "Signature", "KOKEE Fruit Tea", "Cold Cloud", "Ice Blended", "Flavor"]
+        for(let i = 0; i < categories.length; i++){
+          const sendData = {
+            "name": categories[i]
+          }
+          await callApi("insert_category", sendData);
+        }
+      }
+
+      async function itemApi(){
+        const item = [
+          ["KOKEE Milk Tea", "House Milk Tea", "Classic Thai Tea", "Honey Milk Tea", "Coffee Milk Tea",
+            "Matcha Latte", "Oreo Milk Tea", "Coconut Milk Tea", "Strawberry Milk Tea", "Brown Sugar Milk Tea"],
+          ["Dragon & Rose", "Dream Of Butterfly", "Black Lychee", "Georgia On My Mind", "Rose From San Francisco",
+            "Mango Passionfruit", "Purple Love (Taro)"],
+          ["Orange Sangria", "Honey Grapefruit Black Tea", "Strawberry Virgin mojito", "Green Grape Tea"],
+          ["Brown Sugar Cold Brew", "Sweet Cloud Cold Brew", "Sweet Cloud Green Tea", "Oreo C&C Brown Sugar",
+            "Brown Sugar Dalgonatte"],
+          ["Mango + Passionfruit", "Taro", "Dragonfruit", "Pina Colada", "Matcha", "Oreo", "Lychee",
+            "Strawberry", "Mango"],
+          ["Dragon Fruit", "Green Grape", "Mango", "Matcha", "Oreo", "Peach", "Pina Colada", "Strawberry",
+            "Taro", "Lychee + Rose", "Mango + Passionfruit", "Strawberry + Banana", "Strawberry + Kiwi"]
+        ];
+        for(let i = 0; i < item.length; i++){
+          for(let j = 0; j < item[i].length; j++){
+            const price = parseInt((Math.random() * 10)) * 500 + 1000; // 최소 가격이 1000원 부터
+            const id = i + 1    //  카테고리 아이디가 1부터 시작한다.
+            const sendData = {
+              "name": item[i][j],
+              "price": price,
+              "category_id": id
+            };
+            await callApi("insert_item", sendData);
+          }
+        }
+
+      }
+
+      function getRandomDate() {
+        const date = new Date().getTime();
+        //  86400000 -> 1day 랜덤 값에 곱할 수를 변경하여 원하는 날짜 범위를 지정할 수 있다.
+        //  이전 1년 간으로 지정함
+        const ranDate = new Date(date - Math.floor(Math.random() * 31536000000 ))
+        return ranDate.getTime();
+      }
+
+      function getRandomOrder(){
+        //  전체 주문
+        const order_branch = {"qnt":[], "item_id":[]};
+
+        const order = parseInt((Math.random() * 9) + 1); //  주문 당 메뉴 수량 1~9개
+
+        for(let i = 0; i < order; i++){
+          const quantity = parseInt((Math.random() * 4) + 1);     // 단일 메뉴 주문 수량(1~5개)
+          const item_id = parseInt((Math.random() * 47) + 7);     // itemId range(7~54)
+          order_branch.qnt.push(quantity);
+          order_branch.item_id.push(item_id);
+         }
+         return order_branch;
+      }
+
+      async function orderApi(){
+          //  mock data 생성
+          for(let i = 0; i < 1000; i++){
+              const order_branch = getRandomOrder();
+              const sendData = {
+                  "qnt": order_branch.qnt,
+                  "item_id": order_branch.item_id,
+                  "timestamp": getRandomDate()
+              };
+
+              await callApi("insert_order", sendData);
+          }
+      }
+
+      //  jQuery ajax 를 이용하여 데이터 전송
+      function callApi(url, sendData){
+        //  스프링 시큐리티를 사용할 경우 기본적으로 POST 방식의 데이터 전송에 CSRF 토큰이 필요
+        //  head 태그 안에도 meta 데이터로 들어가 있어야 한다.
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+
+        const data = JSON.stringify(sendData);
+        $.ajax({
+            url         : url,
+            type        : "POST",
+            contentType : "application/json",
+            data        : data,
+            beforeSend  : function (xhr){
+              //  데이터 전송하기 전에 헤더에 csrf 값을 설정
+              xhr.setRequestHeader(header, token);
+            },
+            success     : function (data){  //  호출이 성공하면...
+                if(data){
+                    console.log(data);
+                }else{
+                    console.log("전송 실패");
+                }
+            },
+        });
+      }
+    </script>
+</th:block>
+
+
+<div layout:fragment="content">
+  <!-- main contents begin -->
+  <div>
+
+<!--    <div>-->
+<!--      <span id="categoryApi">{"category_name": name}</span>-->
+<!--      <button onclick="categoryApi()">카테고리 전송</button>-->
+<!--    </div>-->
+
+<!--    <div>-->
+<!--      <span id="itemApi">{"name": name, "price": price, "category_id": category_id}</span>-->
+<!--      <button onclick="itemApi()">아이템 내역 전송</button>-->
+<!--    </div>-->
+
+    <div>
+      <button onclick="orderApi()">주문 내역 전송</button>
+      <br>
+    </div>
+
+  </div>
+  <!-- main contents end -->
+</div>
+
+</html>

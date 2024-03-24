@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<div layout:fragment="content">
+
+<!-- 한번에 여러 계정/비번 조회
+    <div>
+        <h3> 지점 정보 </h3>
+        <table>
+            <thead>
+            <tr>
+                <th>이메일</th>
+                <th>비밀번호</th>
+                <th>지점명</th>
+                <th>핸드폰</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="branchDTO : ${list}">
+                <td>
+                    <span th:text="${branchDTO.email}">></span>
+                </td>
+                <td>
+                    <span th:text="${branchDTO.password}"></span>
+                </td>
+                <td>
+                    <span th:text="${branchDTO.name}"></span>
+                </td>
+                <td>
+                    <span th:text="${branchDTO.phone}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    -->
+
+    <h1> 지점 정보</h1>
+    <div>
+        이메일 : <span th:text="${branchDTO.email}"></span>
+    </div>
+    <div>
+        비밀번호 : <span th:text="${branchDTO.password}"></span>
+    </div>
+    <div>
+        비밀번호 : <span th:text="${branchDTO.password}"></span>
+    </div>
+    <div>
+        핸드폰 : <span th:text="${branchDTO.phone}"></span>
+    </div>
+    <!-- 수정 -->
+    <div>
+        <a th:href="@{'/post/edit/' + ${branchDTO.id}}">
+            <button>수정</button>
+        </a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var boardDto = /*[[${branchDTO}]]*/ "";
+    /*]]>*/
+</script>
+
+<!-- script -->
+<script th:inline="javascript" th:src="@{/js/branch.js}"></script>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<div layout:fragment="content">
+
+    <h1 class="h3 mb-2 text-gray-800"> 주문 내역 상세 </h1>
+
+    <!-- Left(테이블 출력) -->
+    <div class="row">
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary"> 매출 리스트 </h6>
+                </div>
+                <!-- 테이블 타이틀 -->
+                <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                           role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                        <thead>
+                        <tr role="row">
+                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                colspan="1" aria-sort="ascending"
+                                aria-label="Name: activate to sort column descending"
+                                style="width: 10%; text-align: center;"> ID
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Position: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 주문일시
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 20%; text-align: center;"> 결제금액
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <!-- DB 데이터 출력 -->
+                        <tbody>
+                        <tr th:each="order, status : ${list}">
+                            <td class="sorting_1" style="text-align: center">
+                                <span th:text="${order.id}"></span>
+                            </td>
+                            <td>
+                                <a href="#" th:id="${order.id}" th:onclick="hideDetail(this.getAttribute('id'))">
+                                <span style="text-align: center" th:text="${order.orderDate}"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <span data-th-text="${#numbers.formatInteger(order.payment, 3, 'COMMA') + '원'}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 페이징 -->
+                    <th:block th:each="page:${#numbers.sequence(startPage,endPage)}">
+                        <a style="text-align: center" th:if="${page != nowPage}"
+                           th:href="@{/orders/list(page=${page -1})}" th:text="${page}"></a>
+                        <strong th:if="${page==nowPage}" th:text="${page}" style="color:red"></strong>
+                    </th:block>
+
+                </div>
+                <!-- End Table -->
+
+            </div>
+        </div>
+
+        <!-- 상세내역 -->
+        <div class="col-lg-6" id="orderDetailShowDiv">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary"> 주문 내역 상세 </h6>
+                </div>
+                <!-- 테이블 타이틀 -->
+                <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                           role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th scope="col">메뉴</th>
+                            <th scope="col">수량</th>
+                            <th scope="col">가격</th>
+                            <th scope="col">소계</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orderDetailList">
+                        <!-- createOrderDetail -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- End Table -->
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        // hide ans show
+        function showDetail() {
+            $("#orderDetailShowDiv").show();
+            // goodsBtn을 클릭하면 goodsDiv를 보여줘라
+        }
+
+        function hideDetail(id) {
+            callApi("/postorder/"+id);
+            $("#orderDetailShowDiv").hide();
+            // goodsBtn을 클릭하면 goodsDiv를 숨겨라
+
+        }
+
+        function callApi(url){
+            //  스프링 시큐리티를 사용할 경우 기본적으로 POST 방식의 데이터 전송에 CSRF 토큰이 필요
+            //  head 태그 안에도 meta 데이터로 들어가 있어야 한다.
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url         : url,
+                type        : "POST",
+                contentType : "application/json",
+                beforeSend  : function (xhr){
+                    //  데이터 전송하기 전에 헤더에 csrf 값을 설정
+                    xhr.setRequestHeader(header, token);
+                },
+                success     : function (data){  //  호출이 성공하면...
+                    if(data){
+                        //  여기에 받아온 data를 처리하는 함수를 호출한다.
+                        console.log(data);
+                        createOrderDetail(data);
+                    }else{
+                        console.log("전송 실패");
+                    }
+                },
+            });
+        }
+
+        function createOrderDetail(data){
+            let str = '';
+
+            $.each(data, function (idx, od){
+
+                console.log(od);
+                str += '  <tr>';
+                str += '    <th scope="row">' + od.name + '</th>';
+                str += '    <td>' + od.quantity + '</td>';
+                str += '    <td>' + od.price + '</td>';
+                str += '    <td>' + (od.quantity * od.price) + '</td>';
+                str += '  </tr>';
+            });
+
+            $('#orderDetailList').html(str);
+            showDetail();
+        }
+        hideDetail();
+    </script>
+</th:block>
+
+
+
+</html>

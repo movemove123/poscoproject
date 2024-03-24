@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<div th:fragment="navisub">
+
+  <!-- 사이드바 -->
+  <ul class="navbar-nav sideg sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/main">
+      <img th:src="@{/img/KokeeTeaLogo.webp}" alt="Kokee Tea Logo" width="50" height="50">
+      <div class="sidebar-brand-text mx-3"> KoKee Tea </div>
+    </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item">
+      <a class="nav-link" href="/main">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span> 매출 통계 </span></a>
+    </li>
+
+    <!-- ADMIN 권한인 경우 -->
+    <div sec:authorize="hasRole('ADMIN')">
+      <li class="nav-item">
+        <a class="nav-link" href="/chart/daily">
+          <i class="fas fa-fw fa-table"></i>
+          <span> 일별 통계 </span></a>
+      </li>
+    </div>
+
+    <!-- USER 권한인 경우 -->
+    <div sec:authorize="hasRole('USER')">
+      <li class="nav-item">
+        <a th:href="@{/chart/daily/{branchId}(branchId=${#session.getAttribute('branchId')})}" class="nav-link" >
+          <i class="fas fa-fw fa-table"></i>
+          <span> 일별 통계 </span></a>
+      </li>
+    </div>
+
+    <div sec:authorize="hasRole('ADMIN')">
+      <li class="nav-item">
+        <a class="nav-link" href="/chart/month">
+          <i class="fas fa-fw fa-table"></i>
+          <span> 월별 통계 </span></a>
+      </li>
+    </div>
+
+    <!-- USER 권한인 경우 -->
+    <div sec:authorize="hasRole('USER')">
+      <li class="nav-item">
+        <a th:href="@{/chart/month/{branchId}(branchId=${#session.getAttribute('branchId')})}" class="nav-link">
+          <i class="fas fa-fw fa-table"></i>
+          <span> 월별 통계 </span>
+        </a>
+      </li>
+    </div>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/test/orders">
+        <i class="fas fa-fw fa-cog"></i>
+        <span> 매출 목록 </span></a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <li class="nav-item">
+      <a class="nav-link" href="/test/branchList">
+        <i class="fas fa-fw fa-folder"></i>
+        <span> 지점 관리 </span></a>
+    </li>
+    <div sec:authorize="hasRole('USER')">
+      <li class="nav-item">
+        <a class="nav-link" href="/test/employeeList">
+          <i class="fas fa-fw fa-folder"></i>
+          <span> 직원 관리 </span></a>
+      </li>
+    </div>
+
+    <hr class="sidebar-divider">
+
+    <li class="nav-item">
+      <a class="nav-link" href="/test/ingredientList">
+        <i class="fas fa-fw fa-folder"></i>
+        <span> 재고 관리 </span></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/test/stockOrderList">
+        <i class="fas fa-fw fa-folder"></i>
+          <span> 발주 관리 </span></a>
+    </li>
+
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <div class="text-center d-none d-md-inline">
+      <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+  </ul>
+</div>
+</html>

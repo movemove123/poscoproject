@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+
+<div layout:fragment="content">
+    <div>
+      <form action="brachRequest">
+          <form action="brachReq" method="post">
+              이름 : <input type="text" name="id"><br>
+              이메일 : <input type="text" name="email"><br>
+              지점명: <input type="text" name="password"><br>
+              주소 : <input type="text" name="name"><br>
+              번호 : <input type="text" name="address"><br>
+          </form>
+          <button type="submit">지점 요청</button>
+      </form>
+    </div>
+</div>
+
+
+</html>

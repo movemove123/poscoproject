@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<div layout:fragment="content">
+
+  <!-- 테이블 제목 -->
+  <h1 class="h3 mb-2 text-gray-800"> 주문 내역 상세 </h1>
+
+  <!-- 테이블 부제목 -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary"> 매출 리스트 </h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+          <!-- 테이블 타이틀 -->
+          <div class="row">
+            <div class="col-sm-12">
+              <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                     role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                <thead>
+                <tr role="row">
+                  <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                      colspan="1" aria-sort="ascending"
+                      aria-label="Name: activate to sort column descending"
+                      style="width: 10%; text-align: center;"> ID
+                  </th>
+                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                      aria-label="Position: activate to sort column ascending"
+                      style="width: 10%; text-align: center;"> 주문일시
+                  </th>
+                  <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                      aria-label="Office: activate to sort column ascending"
+                      style="width: 20%; text-align: center;"> 결제금액
+                  </th>
+                </tr>
+                </thead>
+
+                <!-- DB 데이터 출력 -->
+                <tbody>
+                <tr th:each="order, status : ${orders}">
+                  <td class="sorting_1" style="text-align: center">
+                    <span th:text="${order.id}"></span>
+                  </td>
+                  <td>
+                    <span style="text-align: center" th:text="${order.orderDate}"></span>
+
+                  </td>
+                  <td>
+                    <span th:text="${order.payment}"></span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+
+              <!-- 페이징 -->
+              <th:block th:each="page:${#numbers.sequence(startPage,endPage)}">
+                <a style="text-align: center" th:if="${page != nowPage}"
+                   th:href="@{/orders/list(page=${page -1})}" th:text="${page}"></a>
+                <strong th:if="${page==nowPage}" th:text="${page}" style="color:red"></strong>
+              </th:block>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 그래프 추가 예정   -->
+
+</div>
+</div>
+</html>

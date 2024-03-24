@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/test/layout}">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+<style>
+    .card-header {
+        display: flex;
+    }
+    .card-header h6{
+        width: 30%;
+    }
+    .branchInfo {
+        display: block;
+        width: 70%;
+    }
+</style>
+</head>
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <h1 class="h3 mb-2 text-gray-800"> 매출 목록 </h1>
+
+    <!-- Left(테이블 출력) -->
+    <div class="row">
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary"> 매출 목록</h6>
+                </div>
+                <!-- 테이블 타이틀 -->
+                <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                           role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                        <thead>
+                        <tr role="row">
+                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                colspan="1" aria-sort="ascending"
+                                aria-label="Name: activate to sort column descending"
+                                style="width: 10%; text-align: center;"> ID
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Position: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 주문일시
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 20%; text-align: center;"> 결제금액
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                aria-label="Office: activate to sort column ascending"
+                                style="width: 10%; text-align: center;"> 지점명
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <!-- DB 데이터 출력 -->
+                        <tbody>
+                        <tr th:each="order, status : ${list}">
+                            <td class="sorting_1" style="text-align: center">
+                                <a href="#" th:onclick="'toggleDetail(' + ${order.id} + '); return false;'" th:id="'id_' + ${order.id}">
+                                    <span th:text="${order.id}"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${order.poDate}"></span>
+                            </td>
+                            <td>
+                                <span data-th-text="${#numbers.formatInteger(order.poPayment, 3, 'COMMA')}"></span>
+                            </td>
+                            <td>
+                                <span style="text-align: center" th:text="${order.branch.branchName}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <!-- 페이징 -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <!-- 이전 버튼 Prev -->
+                            <li class="page-item" th:classappend="${nowPage <= 1} ? disabled : ''">
+                                <a th:href="@{/test/orders(page=${nowPage - 2}, startDate=${startDate}, endDate=${endDate})}" class="page-link">
+                                <span aria-hidden="true">Prev</span>
+                                </a>
+                            </li>
+                            <!-- 페이지 번호 -->
+                            <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}" th:classappend="${pageNum == nowPage} ? 'active' : ''" class="page-item">
+                                <a th:href="@{/test/orders(page=${pageNum - 1}, startDate=${startDate}, endDate=${endDate})}" th:text="${pageNum}" class="page-link"></a>
+                            </li>
+                            <!-- 다음 버튼 Next -->
+                            <li class="page-item" th:classappend="${nowPage >= endPage} ? disabled : ''">
+                                <a th:href="@{/test/orders(page=${nowPage}, startDate=${startDate}, endDate=${endDate})}" class="page-link">
+                                <span aria-hidden="true">Next</span>
+                                </a>
+                            </li>
+                            <!-- lee: 현재 보고있는 페이지 숫자를 강조 -->
+                            <strong th:if="${page==nowPage}" th:text="${page}" style="color:red"></strong>
+                        </ul>
+                    </nav>
+
+                </div>
+                <!-- End Table -->
+                <div class="card-body">
+                    <form th:action="@{/test/orders}" method="get" class="d-flex justify-content-center">
+                        <div class="input-group mb-3" style="max-width: 500px;">
+                            <input type="date" name="startDate" th:value="${startDate}" class="form-control form-control-sm" />
+                            <input type="date" name="endDate" th:value="${endDate}" class="form-control form-control-sm" />
+                            <button type="submit" class="btn btn-outline-primary btn-sm">검색</button>
+                        </div>
+                    </form>
+                    <!-- Table and other content goes here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 상세내역 -->
+        <div class="col-lg-6" id="orderDetailShowDiv">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        주문 내역 상세
+                    </h6>
+                    <span class="branchInfo" style="text-align: right;"></span>
+                </div>
+                <!-- 테이블 타이틀 -->
+                <div class="col-sm-12">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0"
+                           role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th scope="col">메뉴</th>
+                            <th scope="col">수량</th>
+                            <th scope="col">가격</th>
+                            <th scope="col">금액</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orderDetailList">
+                        <!-- createOrderDetail -->
+                        </tbody>
+                    </table>
+                    <!-- 총결제금액 표시 영역 -->
+                    <div id="totalPaymentDiv" style="text-align:right; margin-right: 20px;">
+                        <strong>총 결제금액: </strong><span id="totalPayment"></span>
+                    </div>
+                </div>
+                <!-- End Table -->
+
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+</div>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /* 변수 추가하여 현재 선택된 항목의 ID 추적 */
+        let currentSelectedId = null;
+
+        function toggleDetail(id) {
+            // 선택된 항목이 이미 표시되고 있는지, 그리고 동일한 ID를 가진 항목을 클릭했는지 확인
+            if($("#orderDetailShowDiv").is(":visible") && currentSelectedId === id){
+                $("#orderDetailShowDiv").hide();
+                currentSelectedId = null; // 선택 초기화
+            } else {
+                currentSelectedId = id; // 현재 선택된 ID 업데이트
+                callApi("/orderDetail/"+id);
+            }
+        }
+
+        function callApi(url){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url         : url,
+                type        : "POST",
+                contentType : "application/json",
+                beforeSend  : function (xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                success     : function (data){
+                    if(data){
+                        console.log(data);
+                        createOrderDetail(data);
+                        $("#orderDetailShowDiv").show(); // 상세정보 표시
+                    }else{
+                        console.log("데이터 로딩 실패");
+                    }
+                },
+            });
+        }
+
+        function createOrderDetail(data){
+            let str = '';
+            console.log(data);
+            $.each(data.orderDetails, function (idx, od){
+
+                str += '  <tr>';
+                str += '    <th scope="row">' + od.product.pdName + '</th>';
+                str += '    <td>' + od.podQuantity + '</td>';
+                str += '    <td>' + od.product.pdPrice.toLocaleString() + '</td>';
+                str += '    <td>' + od.podSubtotal.toLocaleString() + '</td>';
+                str += '  </tr>';
+            });
+
+            $('#orderDetailList').html(str);
+        }
+
+        /* 페이지 로드 시 상세 정보 영역 숨김 처리 */
+        $(document).ready(function(){
+            $("#orderDetailShowDiv").hide();
+        });
+
+        function callApi(url){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url         : url,
+                type        : "POST",
+                contentType : "application/json",
+                beforeSend  : function (xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                success     : function (data){
+                    if(data && data.productOrder){
+                        console.log(data);
+                        updateOrderDetailHeader(data.productOrder); // 주문 내역 상세 헤더 업데이트
+                        createOrderDetail(data); // 기존 상세 정보 생성 로직
+                        $("#orderDetailShowDiv").show(); // 상세정보 표시
+                    }else{
+                        console.log("데이터 로딩 실패");
+                    }
+                },
+            });
+        }
+
+        function updateOrderDetailHeader(productOrder){
+            // productOrder 객체에서 id, poDate, branchName 추출
+            let orderInfo = "주문ID : " + productOrder.id +
+                ", 주문일시 : " + productOrder.poDate +
+                ", 지점명 : " + productOrder.branch.branchName; // branchName 추가
+            // h6 태그 내용 업데이트
+            $("#orderDetailShowDiv .card-header .branchInfo").text(orderInfo);
+        }
+
+        function updateTotalPayment(poPayment){
+            var payment = Number(poPayment); // 문자열을 숫자로 변환
+            $("#totalPayment").text(payment.toLocaleString()); // 변환된 숫자를 포맷하여 표시
+        }
+
+        function callApi(url){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url         : url,
+                type        : "POST",
+                contentType : "application/json",
+                beforeSend  : function (xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                success     : function (data){
+                    if(data && data.productOrder){
+                        console.log(data);
+                        updateOrderDetailHeader(data.productOrder); // 주문 내역 상세 헤더 업데이트
+                        updateTotalPayment(data.productOrder.poPayment); // 총 결제금액 업데이트
+                        createOrderDetail(data); // 기존 상세 정보 생성 로직
+                        $("#orderDetailShowDiv").show(); // 상세정보 표시
+                    }else{
+                        console.log("데이터 로딩 실패");
+                    }
+                },
+            });
+        }
+    </script>
+</th:block>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<th:block layout:fragment="script">
+    <script>
+
+        // jQuery ajax 를 이용하여 데이터 전송
+        function callApi() {
+            console.log("test");
+            for (let i = 1; i <= 30; i++) {
+
+                let branch = "branch" + i;
+
+                $.ajax({
+                    url: "/branchreq",
+                    type: "POST",
+                    data: {
+                        "id": i,
+                        "email": "kokeettea" + i + "@kokeetea.com",
+                        "name": branch,
+                        "password": branch + i,
+                        "address": branch,
+                        "phone": "010-1234-456" + i,
+                    },
+                    success: function (data) {
+                        console.log(data);
+                    },
+                    failure: function () {
+                        alert("실패");
+                    }
+                })
+            }
+        }
+
+
+        function permitBranch(branchId) {
+            $.ajax({
+                url: "branchPermit",
+                type: "POST",
+                data: {
+                    "id": branchId
+                },
+                success: function (data) {
+                    alert("승인 성공")
+                },
+                failure: function () {
+                    alert("실패")
+                }
+            })
+        }
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+    <div>
+        <br>
+        <h3>지점 확인</h3>
+        <table>
+            <thead>
+            <tr>
+                <th class="one wide">No</th>
+                <th class="ten wide">email</th>
+                <th class="two wide">name</th>
+                <th class="three wide">address</th>
+                <th class="three wide">phone</th>
+                <th class="three wide">status</th>
+            </tr>
+            </thead>
+        <tbody>
+        <!-- CONTENTS !-->
+        <tr th:each="branch : ${list}">
+            <td>
+                <span th:text="${branch.id}"></span>
+            </td>
+            <td>
+                <a th:href="@{'/post/' + ${branch.id}}">
+                    <span th:text="${branch.email}"></span></a>
+            </td>
+            <td>
+                <span th:text="${branch.name}"></span>
+            </td>
+            <td>
+                <span th:text="${branch.address}"></span>
+            </td>
+            <td>
+                <span th:text="${branch.phone}"></span>
+            </td>
+            <td>
+                <span th:text="${branch.status}"></span>
+            </td>
+            <td th:if="${branch.status.toString().equals('Pending')}">
+                <button type="button" th:branchId="${branch.id}" onclick="permitBranch(this.getAttribute('branchId'))">승인</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+</html>

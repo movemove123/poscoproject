@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{/test/layout}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<th:block layout:fragment="script">
+    <script>
+        // 유저 정보 획득
+        const user = $("#user").text()
+
+        // jQuery ajax 를 이용하여 데이터 전송
+        function permitBranch(branchId) {
+            $.ajax({
+                url: "branchPermit",
+                type: "POST",
+                data: {
+                    "id": branchId
+                },
+                success: function (data) {
+                    alert("승인 성공")
+                },
+                failure: function () {
+                    alert("실패")
+                }
+            })
+        }
+
+        let dailyData = {}
+
+
+        /** 일별 통계 **/
+        function dailyChart(){
+
+            // console.log("불러와!!")
+
+            // console.log(mainDashBoardData)
+
+            $.ajax({
+                url: "http://localhost:5000/dailyChart/"+user,
+                type: "GET",
+                dataType: 'json',
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+
+                    // console.dir(data)
+                    dailyData = data
+                    // console.dir(dailyData)
+                }
+            })
+
+            return dailyData;
+        }
+
+    </script>
+
+    <div sec:authorize="hasRole('USER')">
+        <script th:src="@{/js/dailyChartBranch.js}"></script>
+    </div>
+    <div sec:authorize="hasRole('ADMIN')">
+        <script th:src="@{/js/dailyChart.js}"></script>
+    </div>
+
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container-fluid" style="max-width: 2000px">
+    <div class="row">
+
+        <!--   ADMIN     -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">일별 매출 합계(전국 지점 총합)</h6>
+                    </div>
+                    <div class="card-body" style="min-height: 460px;">
+                        <div>
+                            <canvas src="" id="dailySalesChart" style="width: 100%; height: 400px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // 서버로부터 받은 dailySalesData 데이터 로그 출력
+
+                var dailySalesData = /*[[${dailySalesData}]]*/ [];
+                console.log(dailySalesData);
+
+                // 날짜(labels)와 매출액(data)을 분리하여 배열로 생성
+                var labels = dailySalesData.map(function(entry) { return entry[0]; });
+                var data = dailySalesData.map(function(entry) { return entry[1]; });
+
+                var ctx = document.getElementById('dailySalesChart').getContext('2d');
+                var dailySalesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '일별 매출',
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 0, 0, 1)',
+                                'rgba(0, 128, 0, 1)',
+                                'rgba(0, 0, 255, 1)',
+                                'rgba(255, 165, 0, 1)',
+                                'rgba(128, 0, 128, 1)',
+                                'rgba(255, 255, 0, 1)',
+                                'rgba(0, 255, 255, 1)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 0, 0, 0.6)',
+                                'rgba(0, 128, 0, 0.6)',
+                                'rgba(0, 0, 255, 0.6)',
+                                'rgba(255, 165, 0, 0.6)',
+                                'rgba(128, 0, 128, 0.6)',
+                                'rgba(255, 255, 0, 0.6)',
+                                'rgba(0, 255, 255, 0.6)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: function(value, context) {
+                                    return value.toLocaleString(); // 숫자에 쉼표 추가
+                                }
+                            }
+                        },
+                        tooltips: { // Chart.js 2.x 버전에서는 tooltips 옵션, 3.x 이상 버전에서는 plugins.tooltip 사용
+                            callbacks: {
+                                // 툴팁에 표시되는 텍스트 형식을 커스터마이징
+                                label: function(tooltipItem, chart) {
+                                    var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+
+
+        <!--   USER     -->
+        <div sec:authorize="hasRole('USER')">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">일별 매출 합계</h6>
+                    </div>
+                    <div class="card-body" style="min-height: 460px;">
+                        <div>
+                            <canvas src="" id="dailySalesChartByBranch" style="width: 100%; height: 400px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // 서버로부터 받은 dailySalesDataByBranch 데이터 로그 출력
+                var dailySalesDataByBranch = /*[[${dailySalesDataByBranch}]]*/ [];
+                console.log(dailySalesDataByBranch);
+
+                // 날짜(labels)와 매출액(data)을 분리하여 배열로 생성
+                var labels = dailySalesDataByBranch.map(function(entry) { return entry[0]; });
+                var data = dailySalesDataByBranch.map(function(entry) { return entry[1]; });
+
+                var ctx = document.getElementById('dailySalesChartByBranch').getContext('2d');
+                var dailySalesChartByBranch = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '일별 매출',
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 0, 0, 1)',
+                                'rgba(0, 128, 0, 1)',
+                                'rgba(0, 0, 255, 1)',
+                                'rgba(255, 165, 0, 1)',
+                                'rgba(128, 0, 128, 1)',
+                                'rgba(255, 255, 0, 1)',
+                                'rgba(0, 255, 255, 1)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 0, 0, 0.6)',
+                                'rgba(0, 128, 0, 0.6)',
+                                'rgba(0, 0, 255, 0.6)',
+                                'rgba(255, 165, 0, 0.6)',
+                                'rgba(128, 0, 128, 0.6)',
+                                'rgba(255, 255, 0, 0.6)',
+                                'rgba(0, 255, 255, 0.6)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: function(value, context) {
+                                    return value.toLocaleString(); // 숫자에 쉼표 추가
+                                }
+                            }
+                        },
+                        tooltips: { // Chart.js 2.x 버전에서는 tooltips 옵션, 3.x 이상 버전에서는 plugins.tooltip 사용
+                            callbacks: {
+                                // 툴팁에 표시되는 텍스트 형식을 커스터마이징
+                                label: function(tooltipItem, chart) {
+                                    var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+
+<!--        &lt;!&ndash; 가장 많이 팔린 메뉴 &ndash;&gt;-->
+<!--        <div class="col-xl-4 col-lg-5">-->
+<!--            <div class="card shadow mb-4">-->
+<!--                <div class="card-header py-3">-->
+<!--                    <h6 class="m-0 font-weight-bold text-primary">일별 주문량 산점도 분석</h6>-->
+<!--                </div>-->
+<!--                <div class="card-body">-->
+<!--                    <div>-->
+<!--                        <img src="" id="scatterDaily">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-xl-4 col-lg-5">-->
+<!--            <div class="card shadow mb-4">-->
+<!--                <div class="card-header py-3">-->
+<!--                    <h6 class="m-0 font-weight-bold text-primary">일별 주문량 BoxPlot 분석</h6>-->
+<!--                </div>-->
+<!--                <div class="card-body">-->
+<!--                    <div>-->
+<!--                        <img src="" id="boxPlotDaily">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+    </div>
+    </div>
+</div>
+</html>

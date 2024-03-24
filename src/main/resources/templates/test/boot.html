@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<nav class="navbar bg-body-tertiary fixed-top">
+  <div class="container-fluid">
+
+    <a class="navbar-brand" href="/main">
+      <img th:src="@{/img/KokeeTeaLogo.webp}" alt="Kokee Tea Logo" width="30" height="30" class="d-inline-block align-top">
+      KoKee Tea
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+
+      <!-- 계정 정보 -->
+      <div class="nav-item dropdown no-arrow">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="mr-2 d-none d-lg-inline text-gray-600 small" id="user" th:text="${#session.getAttribute('branchName')}"></span>
+          <img class="img-profile rounded-circle" th:src="@{/img/undraw_profile.svg}">
+        </a>
+        <!-- 계정 정보 상세 -->
+        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+             aria-labelledby="userDropdown">
+          <a class="dropdown-item" href="#">
+            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+            설정
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            로그아웃
+          </a>
+        </div>
+      </div>
+
+      <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/main">매출 통계</a>
+          </li>
+
+          <li class="nav-item">
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link active" aria-current="page" href="/chart/daily">일별 통계 (전체)</a>
+            <a sec:authorize="hasRole('USER')" th:href="@{/chart/daily/{branchId}(branchId=${#session.getAttribute('branchId')})}" class="nav-link active" aria-current="page">일별 통계</a>
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link active" aria-current="page" href="/chart/month">월별 통계 (전체)</a>
+            <a sec:authorize="hasRole('USER')" th:href="@{/chart/month/{branchId}(branchId=${#session.getAttribute('branchId')})}" class="nav-link active" aria-current="page">월별 통계</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/test/orders">매출 목록</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/test/orders">지점 관리</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/test/orders">직원 관리</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/test/orders">재고 관리</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/test/orders">발주 관리</a>
+          </li>
+        </ul>
+        <form class="d-flex mt-3" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+</nav>
+</body>
+</html>

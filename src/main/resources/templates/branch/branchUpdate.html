@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+
+<div layout:fragment="content">
+
+    <div class="row justify-content-center">
+
+        <div class="col-xl-10 col-lg-12 col-md-9">
+
+            <div class="card o-hidden border-0 shadow-lg login-top">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="p-5">
+                            <div>
+                                <h1 class="h4 text-gray-900 mb-4"> 지점 정보 수정 </h1>
+                            </div>
+                            <form class="user" th:action="@{'/post/edit/' + ${branchDTO.id}}" method="post">
+                                <input type="hidden" name="_method" value="put"/>
+                                <input type="hidden" name="id" th:value="${branchDTO.id}"/>
+
+                                <div class="form-group">
+                                    <b>이메일</b> <input type="email" class="form-control" name="email" th:value="${branchDTO.email}">
+                                </div>
+
+                                <div class="form-group">
+                                    <b>비밀번호</b> <input type="password" class="form-control" name="password" th:value="${branchDTO.password}">
+                                </div>
+
+                                <div class="form-group">
+                                    <b>지점명</b> <br> <span th:text="${branchDTO.name}"></span> <br>
+                                    <input type="hidden" name="name" th:value="${branchDTO.name}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <b>핸드폰</b> <input type="tel" class="form-control" name="phone" th:value="${branchDTO.phone}">
+                                </div>
+                                <div>
+                                    <input type="submit" class="btn btn-primary" value="수정">
+                                </div>
+                                <input type="hidden" name="address" th:value="${branchDTO.address}"/>
+                                <input type="hidden" name="status" th:value="${branchDTO.status}"/>
+                                <input type="hidden" name="authority" th:value="${branchDTO.authority}"/>
+                            </form>
+
+                            <!--    <div>-->
+                            <!--        <h3> 지점 정보 수정 </h3>-->
+                            <!--    </div>-->
+
+                            <!--    <form th:action="@{'/post/edit/' + ${branchDTO.id}}" method="post">-->
+                            <!--        <input type="hidden" name="_method" value="put"/>-->
+                            <!--        <input type="hidden" name="id" th:value="${branchDTO.id}"/>-->
+
+                            <!--        이메일 : <input type="email" name="email" th:value="${branchDTO.email}"> <br><br>-->
+                            <!--        비밀번호 : <input type="password" name="password" th:value="${branchDTO.password}"> <br><br>-->
+                            <!--        지점명 : <span th:text="${branchDTO.name}"></span> <br><br>-->
+                            <!--        핸드폰 : <input type="tel" name="phone" th:value="${branchDTO.phone}"> <br><br>-->
+
+                            <!--        <input type="submit" value="수정">-->
+                            <!--    </form>-->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

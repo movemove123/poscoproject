@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout1sub}">
+<link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<div layout:fragment="content">
+
+  <!-- 검색기능 -->
+  <form th:action="@{/search}" method="GET"
+        style="display: flex; justify-content: flex-end; padding: 10px 0;">
+    <input type="date" id="start" name="startDate">
+    ~
+    <input type="date" id="end" name="endDate">
+    <input type="submit" value="검색"/>
+  </form>
+
+  <h1>매출 리스트</h1>
+  <table>
+    <thead>
+    <tr>
+      <td>ID</td>
+      <td>주문 일시</td>
+      <td>결제 금액</td>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="order, status : ${orders}">
+      <td>
+        <span th:text="${order.id}"></span>
+      </td>
+      <td>
+          <span th:text="${order.orderDate}"></span>
+      </td>
+      <td>
+        <span th:text="${order.payment}"></span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+<!--  <br> <br> <hr>-->
+<!--  <nav style="text-align: center;">-->
+<!--    <ul class="pagination">-->
+<!--      <li class="disabled">-->
+<!--        <a href="#" aria-label="First">-->
+<!--          <span aria-hidden="true">First</span>-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      <li class="disabled">-->
+<!--        <a href="#" aria-label="Previous">-->
+<!--          <span aria-hidden="true">&lt;</span>-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      <li class="active"><a href="#">1</a></li>-->
+<!--      <li><a href="#">2</a></li>-->
+<!--      <li><a href="#">3</a></li>-->
+<!--      <li><a href="#">4</a></li>-->
+<!--      <li><a href="#">5</a></li>-->
+<!--      <li>-->
+<!--        <a href="#" aria-label="Next">-->
+<!--          <span aria-hidden="true">&gt;</span>-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      <li>-->
+<!--        <a href="#" aria-label="Last">-->
+<!--          <span aria-hidden="true">Last</span>-->
+<!--        </a>-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--  </nav>-->
+
+
+
+  <br> <br>
+  <div th:with="start=${(orders.number/maxPage)*maxPage + 1}, end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})" >
+    <ul class="pagination justify-content-center">
+
+
+      <li class="page-item" th:classappend="${orders.first}?'disabled'">
+        <a th:onclick="'javascript:page(' + ${orders.number - 1} + ')'" aria-label='Previous' class="page-link">
+          <span aria-hidden='true'>Previous</span>
+        </a>
+      </li>
+
+      <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${orders.number eq page}?'active':''">
+        <a th:href="@{/orders/{page}(page=${page}, startDate=${startDate}, endDate=${endDate})}" th:inline="text" class="page-link">[[${page}]]</a>
+      </li>
+
+      <li class="page-item" th:classappend="${orders.last}?'disabled'">
+        <a th:onclick="'javascript:page(' + ${orders.number + 1} + ')'" aria-label='Next' class="page-link">
+          <span aria-hidden='true'>Next</span>
+        </a>
+      </li>
+
+    </ul>
+
+  </div>
+</div>
+</html>

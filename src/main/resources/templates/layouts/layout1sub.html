@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="gurodigital project a team">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <title>KoKee Tea Sales</title>
+
+    <!-- layout1을 사용하는 페이지 공용 CSS only -->
+    <link th:href="@{/css/kkt.min.css}" rel="stylesheet">
+    <link th:href="@{/css/order.css}" rel="stylesheet">
+    <!--  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">-->
+    <link th:href="@{/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
+          rel="stylesheet">
+    <link th:href="@{/css/table.min.css}" rel="stylesheet">
+    <!-- 개별 페이지의 css -->
+    <th:block layout:fragment="css"></th:block>
+
+</head>
+
+<body id="page-top">
+<!-- 사이드바 -->
+<div id="wrapper">
+
+    <div th:replace="fragments/navisub"></div>
+
+    <!-- 헤더 -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <div th:replace="fragments/headersub::headersub"></div>
+
+            <!--  본문   -->
+            <div class="container-fluid">
+                <div layout:fragment="content"></div>
+            </div>
+
+            <!-- 푸터  -->
+            <div layout:fragment="footer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 위로 버튼 -->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- 로그아웃 모달 -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">로그아웃</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">로그아웃 합니다</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                <a class="btn btn-primary" th:href="@{/logout}">확인</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- layout1을 사용하는 공용 스크립트 요소 JS, Popper.js, and jQuery -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/jquery.easing.min.js}"></script>
+
+<script th:src="@{/js/kkt.min.js}"></script>
+<script th:src="@{/js/Chart.min.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.js"></script>
+
+<!--<script th:src="@{/js/mainDashboard_map.js}"></script>-->
+
+<script th:src="@{/js/util.js}"></script>
+
+<!-- 개별 페이지의 script fragment -->
+<th:block layout:fragment="script"></th:block>
+
+<!-- table js, jq -->
+<script th:src="@{/js/jqueryTables.min.js}"></script>
+<script th:src="@{/js/table.min.js}"></script>
+<script th:src="@{/js/table-demo.js}"></script>
+
+</body>
+</html>

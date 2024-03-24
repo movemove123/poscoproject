@@ -1,0 +1,100 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.14-SNAPSHOT'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+}
+
+group = 'com.posco'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+configurations {
+    developmentOnly
+    runtimeClasspath{
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Hibernate Validator
+    implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+    // 스프링 부트 스타터 검증
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // MySQL DB
+    implementation 'mysql:mysql-connector-java'
+
+    //	JSON
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    // add querydsl 01
+    implementation 'com.querydsl:querydsl-jpa'
+    // add querydsl 02
+    implementation 'com.querydsl:querydsl-apt'
+
+    // spring mail
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+
+    // thymeleaf layout
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
+
+    // thymeleaf for security
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+    // webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // spring security
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.7.1'
+
+}
+
+// add querydsl 03
+//def querydslDir = 'src/main/generated'
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', querydslDir]
+        }
+    }
+}
+
+compileQuerydsl{
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
